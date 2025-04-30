@@ -24,11 +24,13 @@ public sealed class GameplaySceneInstaller : MonoInstaller
 
   private void BindFromComponentInHierarchy()
   {
+    Container.Bind<CinemachineCamera>().FromComponentInHierarchy().AsSingle().NonLazy();
     Container.Bind<CinemachineImpulseSource>().FromComponentInHierarchy().AsSingle().NonLazy();
 
     Container.Bind<ZoneManager>().FromComponentInHierarchy().AsSingle().NonLazy();
     Container.Bind<WaveManager>().FromComponentInHierarchy().AsSingle().NonLazy();
-    //Container.Bind<LevelManager>().FromComponentInHierarchy().AsSingle().NonLazy();
+    Container.Bind<RoomManager>().FromComponentInHierarchy().AsSingle().NonLazy();
+    Container.Bind<RoomLoadingUI>().FromComponentInHierarchy().AsSingle().NonLazy();
   }
 
   private void BindInterfacesAndSelfToTick()

@@ -4,7 +4,7 @@ using UnityEngine;
 public sealed class CameraController : MonoBehaviour
 {
   [Header("Camera")]
-  [SerializeField] private CinemachineCamera _mainCamera;
+  [SerializeField] private CinemachineCamera _mainCinemachineCamera;
 
   [Header("Settings")]
   [SerializeField, Min(0)] private float _sensitivity = 1;
@@ -27,7 +27,7 @@ public sealed class CameraController : MonoBehaviour
 
   //======================================
 
-  public CinemachineCamera MainCinemachineCamera => _mainCamera;
+  public CinemachineCamera MainCinemachineCamera => _mainCinemachineCamera;
 
   public Camera MainCamera { get; private set; }
 
@@ -52,6 +52,13 @@ public sealed class CameraController : MonoBehaviour
   }
 
   //======================================
+
+  public void Initialize(CinemachineCamera parCinemachineCamera)
+  {
+    _mainCinemachineCamera = parCinemachineCamera;
+
+    _mainCinemachineCamera.Target.TrackingTarget = transform;
+  }
 
   public void AddRecoil(float parStrength)
   {

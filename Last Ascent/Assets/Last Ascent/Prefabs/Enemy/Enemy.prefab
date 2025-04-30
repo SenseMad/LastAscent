@@ -82,6 +82,7 @@ MonoBehaviour:
   _playerLayer:
     serializedVersion: 2
     m_Bits: 64
+  _spawnEffectPrefab: {fileID: 111730, guid: 24c9c019834754547bed7a5da7659696, type: 3}
   _enemySkin: {fileID: 0}
 --- !u!114 &3267838076943725200
 MonoBehaviour:

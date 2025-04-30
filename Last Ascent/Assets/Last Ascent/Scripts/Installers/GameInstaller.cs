@@ -6,6 +6,7 @@ public sealed class GameInstaller : ScriptableObjectInstaller<GameInstaller>
 {
   [field: SerializeField] public InstallerPlayerSkinData InstallerPlayerSkinData { get; private set; }
   [field: SerializeField] public ListEnemies ListEnemies { get; private set; }
+  [field: SerializeField] public InstallerLocationsData InstallerLocationsData { get; private set; }
 
   //======================================
 
@@ -13,6 +14,7 @@ public sealed class GameInstaller : ScriptableObjectInstaller<GameInstaller>
   {
     Container.BindInstance(InstallerPlayerSkinData).AsSingle();
     Container.BindInstance(ListEnemies).AsSingle();
+    Container.BindInstance(InstallerLocationsData).AsSingle();
   }
 
   //======================================

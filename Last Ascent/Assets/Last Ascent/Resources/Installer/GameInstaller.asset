@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <InstallerPlayerSkinData>k__BackingField: {fileID: 11400000, guid: 98607375f1e98ce4f9a0c892234d5f5b, type: 2}
   <ListEnemies>k__BackingField: {fileID: 11400000, guid: 3b3e1a6d329437e4cb0fa270fc0d3432, type: 2}
+  <InstallerLocationsData>k__BackingField: {fileID: 11400000, guid: 808d6940cd807694d9da87685f26eb35, type: 2}

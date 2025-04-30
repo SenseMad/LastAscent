@@ -49,9 +49,6 @@ public sealed class PlayerMovement : MonoBehaviour, ITickable
 
   private void Update()
   {
-    if (player.IsPlayerUnavailable())
-      return;
-
     Tick();
   }
 
@@ -105,7 +102,7 @@ public sealed class PlayerMovement : MonoBehaviour, ITickable
   {
     Vector2 frameInput = Vector2.ClampMagnitude(player.InputHandler.Move(), 1.0f);
 
-    if (!player.CharacterController.enabled)
+    if (player.IsPlayerUnavailable())
       frameInput = Vector2.zero;
 
     Transform camTransform = player.CameraController.MainCinemachineCamera.transform;
@@ -151,10 +148,9 @@ public sealed class PlayerMovement : MonoBehaviour, ITickable
     else
       velocity.y = -0.03f;
 
-    if (!player.CharacterController.enabled)
-      return;
+    if (player.CharacterController.enabled)
+      player.CharacterController.Move(velocity * Time.deltaTime);
 
-    player.CharacterController.Move(velocity * Time.deltaTime);
     player.Animator.SetFloat(PlayerAnimatorParams.SPEED, animationBlend);
 
     Vector3 localMoveDirection = transform.InverseTransformDirection(desiredVelocity);
@@ -165,63 +161,6 @@ public sealed class PlayerMovement : MonoBehaviour, ITickable
     player.Animator.SetFloat(PlayerAnimatorParams.MOVE_X, moveInput.x, 0.1f, Time.deltaTime);
     player.Animator.SetFloat(PlayerAnimatorParams.MOVE_Y, moveInput.y, 0.1f, Time.deltaTime);
   }
-
-  /*private void Move()
-  {
-    Vector2 frameInput = Vector2.ClampMagnitude(player.InputHandler.Move(), 1.0f);
-
-    if (!player.CharacterController.enabled)
-      frameInput = Vector2.zero;
-
-    Transform camTransform = player.CameraController.MainCinemachineCamera.transform;
-
-    Vector3 camForward = camTransform.forward;
-    camForward.y = 0f;
-    camForward.Normalize();
-
-    Vector3 camRight = camTransform.right;
-    camRight.y = 0f;
-    camRight.Normalize();
-
-    Vector3 moveDirection = camRight * frameInput.x + camForward * frameInput.y;
-    moveDirection.Normalize();
-
-    float targetSpeed = (!player.IsRunning || player.IsAiming) ? _speedWalking : _speedRunning;
-    Vector3 desiredVelocity = moveDirection * targetSpeed;
-
-    if (moveDirection != Vector3.zero)
-      animationBlend = Mathf.Lerp(animationBlend, targetSpeed, Time.deltaTime * _acceleration);
-    else
-      animationBlend = Mathf.Lerp(animationBlend, 0f, Time.deltaTime * _deceleration);
-
-    if (moveDirection.sqrMagnitude > 0.01f && !isRotationLocked)
-    {
-      Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-      transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
-    }
-
-    velocity = Vector3.Lerp(
-        new Vector3(velocity.x, 0f, velocity.z),
-        new Vector3(desiredVelocity.x, 0f, desiredVelocity.z),
-        Time.deltaTime * (moveDirection.sqrMagnitude > 0.0f ? _acceleration : _deceleration)
-    );
-
-    if (!isGrounded)
-    {
-      if (wasGrounded && !isJumping)
-        velocity.y = 0.0f;
-
-      velocity.y -= _gravity * Time.deltaTime;
-    }
-    else
-      velocity.y = -0.03f;
-
-    if (!player.CharacterController.enabled)
-      return;
-
-    player.CharacterController.Move(velocity * Time.deltaTime);
-    player.Animator.SetFloat(PlayerAnimatorParams.SPEED, animationBlend);
-  }*/
 
   private void RotatingToTarget()
   {

@@ -21,8 +21,11 @@ public class Enemy : MonoBehaviour, IDamageable
   [Header("Mask")]
   [SerializeField] private LayerMask _playerLayer;
 
+  [Header("Effect")]
+  [SerializeField] private GameObject _spawnEffectPrefab;
+
   [Space]
-  [SerializeField] private GameObject _enemySkin;
+  [SerializeField] private GameObject _enemySkin;  
 
   //--------------------------------------
 
@@ -46,6 +49,8 @@ public class Enemy : MonoBehaviour, IDamageable
   public Player NearestPlayer { get; private set; }
 
   public EnemyType EnemyType => _enemyType;
+
+  public GameObject SpawnEffectPrefab => _spawnEffectPrefab;
 
   public Health Health { get; private set; }
 
