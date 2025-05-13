@@ -46,9 +46,7 @@ public class EnemyRangedWeapon : EnemyWeapon
     BaseProjectile projectile = Instantiate(_projectilePrefab, parStartPoint, rotation);
 
     projectile.Initialize(Damage, parOwner);
-    projectile.Launch(parDirection, _attackSpeed);
-
-    //projectile.Rigidbody.linearVelocity = parDirection * _attackSpeed;
+    projectile.Launch(parDirection, _attackSpeed, _force);
   }
 
   private void CreateProjectile()

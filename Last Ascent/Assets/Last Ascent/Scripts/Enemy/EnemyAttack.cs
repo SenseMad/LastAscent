@@ -71,7 +71,7 @@ public class EnemyAttack : MonoBehaviour
     if (!enemy.NearestPlayer.TryGetComponent(out IDamageable parDamageable))
       return;
 
-    parDamageable.TakeDamage(_damage);
+    parDamageable.TakeDamage(_damage, Vector3.zero, Vector3.zero);
 
     wasAnAttack = true;
   }

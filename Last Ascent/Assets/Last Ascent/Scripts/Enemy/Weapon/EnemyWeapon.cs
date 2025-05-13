@@ -6,6 +6,7 @@ using UnityEngine;
 public abstract class EnemyWeapon : MonoBehaviour
 {
   [SerializeField, Min(0)] private int damage;
+  [SerializeField, Min(0)] protected float _force = 10.0f;
 
   [Header("Attack Settings")]
   [SerializeField, Min(0)] protected int _attackPerMinutes = 60;

@@ -15,6 +15,10 @@ public class Enemy : MonoBehaviour, IDamageable
   [Header("Effect")]
   [SerializeField] private GameObject _spawnEffectPrefab;
 
+  //--------------------------------------
+
+  private RagdollHandler ragdollHandler;
+
   //======================================
 
   public float RotationSpeed => _rotationSpeed;
@@ -34,10 +38,6 @@ public class Enemy : MonoBehaviour, IDamageable
 
   public List<EnemyBodyPart> EnemyBodyParts { get; private set; }
 
-  //public SmartAttack SmartAttack { get; private set; }
-
-  //public IWeapon Weapon { get; private set; }
-
   public Collider CurrentCollider { get; private set; }
 
   public TargetDetector TargetDetector { get; private set; }
@@ -50,11 +50,14 @@ public class Enemy : MonoBehaviour, IDamageable
 
   private void Awake()
   {
+    ragdollHandler = GetComponent<RagdollHandler>();
+    ragdollHandler.Initialize();
+
     EnemyStateMachine = transform.AddComponent<EnemyStateMachine>();
 
     NavMeshAgent = GetComponent<NavMeshAgent>();
 
-    CurrentCollider = GetComponent<Collider>();
+    CurrentCollider = GetComponentInChildren<Collider>();
 
     Animator = GetComponent<Animator>();
 
@@ -90,9 +93,6 @@ public class Enemy : MonoBehaviour, IDamageable
   public void InitializingModules()
   {
     TargetDetector = GetComponent<TargetDetector>();
-    //SmartAttack = GetComponent<SmartAttack>();
-
-    //Weapon = GetComponentInChildren<IWeapon>();
 
     Animator.SetLayerWeight(Animator.GetLayerIndex($"{EnemyAnimatorLayers.UPPER_BODY_LAYER}"), 1);
   }
@@ -106,12 +106,19 @@ public class Enemy : MonoBehaviour, IDamageable
     Health.OnInstantlyKill += Health_OnInstantlyKill;
   }
 
-  public void TakeDamage(int parDamage)
+  public void TakeDamage(int parDamage, Vector3 parForce, Vector3 parHitPoint)
   {
     if (Health == null)
       return;
 
     Health.TakeHealth(parDamage);
+
+    if (Health.CurrentHealth <= 0)
+    {
+      Animator.enabled = false;
+      ragdollHandler.Enable();
+      ragdollHandler.Hit(parForce, parHitPoint);
+    }
   }
 
   /*public void SetAttackAnimatorLayer()
@@ -134,15 +141,18 @@ public class Enemy : MonoBehaviour, IDamageable
       NavMeshAgent.enabled = false;
     }
 
-    Animator.SetTrigger($"{EnemyAnimatorParams.IS_DIE}");
+    Animator.enabled = false;
+    ragdollHandler.Enable();
 
-    foreach (var enemyBodyPart in EnemyBodyParts)
+    //Animator.SetTrigger($"{EnemyAnimatorParams.IS_DIE}");
+
+    /*foreach (var enemyBodyPart in EnemyBodyParts)
     {
       if (enemyBodyPart == null)
         continue;
 
       enemyBodyPart.Collider.enabled = false;
-    }
+    }*/
     CurrentCollider.enabled = false;
 
     for (int i = 0; i < Animator.layerCount; i++)
@@ -161,7 +171,7 @@ public class Enemy : MonoBehaviour, IDamageable
     if (!TargetDetector.NearestPlayer.TryGetComponent(out IDamageable parDamageable))
       return;
 
-    parDamageable.TakeDamage(EnemyWeaponInventory.ActiveWeapon.Damage);
+    parDamageable.TakeDamage(EnemyWeaponInventory.ActiveWeapon.Damage, Vector3.zero, Vector3.zero);
     //Debug.Log("Урон нанесен");
   }
 

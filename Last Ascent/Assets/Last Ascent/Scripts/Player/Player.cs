@@ -105,7 +105,7 @@ public sealed class Player : MonoBehaviour, IDamageable
 
   #endregion
 
-  public void TakeDamage(int parDamage)
+  public void TakeDamage(int parDamage, Vector3 parForce, Vector3 parHitPoint)
   {
     Health.TakeHealth(parDamage);
   }

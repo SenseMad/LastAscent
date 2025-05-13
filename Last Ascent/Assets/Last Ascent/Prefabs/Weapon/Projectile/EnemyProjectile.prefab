@@ -154,9 +154,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 50
+  _force: 10
   _destroyAfter: 5
   _hitEffectPrefab: {fileID: 0}
   _maxDistance: 100
-  _hitMask:
+  _ignoreHitMask:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 1792

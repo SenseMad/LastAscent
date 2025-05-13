@@ -3,25 +3,20 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody), typeof(Collider))]
 public class PhysicsProjectile : BaseProjectile
 {
-  private Collider currentCollider;
-
   private Rigidbody rb;
 
   //======================================
 
-  private void Awake()
+  protected override void Awake()
   {
-    currentCollider = GetComponent<Collider>();
+    base.Awake();
 
     rb = GetComponent<Rigidbody>();
-
-    if (owner != null)
-      Physics.IgnoreCollision(owner.GetComponent<Collider>(), currentCollider);
   }
 
   //======================================
 
-  public override void Launch(Vector3 parDirection, float parSpeed)
+  public override void Launch(Vector3 parDirection, float parSpeed, float parForce)
   {
     rb.angularVelocity = parDirection * _speed;
   }

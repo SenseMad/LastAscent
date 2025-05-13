@@ -124,7 +124,7 @@ public sealed class FirearmsWeapon : Weapon
     BaseProjectile projectile = Instantiate(_projectilePrefab, parStartPoint, rotation);
 
     projectile.Initialize(_damage, parOwner);
-    projectile.Launch(parDirection, _shotSpeed);
+    projectile.Launch(parDirection, _shotSpeed, _force);
 
     //projectile.Rigidbody.linearVelocity = parDirection * _shotSpeed;
   }

@@ -6,32 +6,12 @@ public class EnemyAttackState : EnemyBaseState
   {
     parState.Enemy.NavMeshAgent.isStopped = true;
 
-    /*var weapon = parState.Enemy.EnemyWeaponInventory.ActiveWeapon;
-
-    if (weapon != null)
-    {
-      weapon.OnAttackChargeComplete += () =>
-      {
-        parState.Enemy.Animator.SetTrigger(EnemyAnimatorParams.IS_ATTACK);
-      };
-    }*/
-
     parState.Enemy.Animator.SetLayerWeight(parState.Enemy.Animator.GetLayerIndex($"{EnemyAnimatorLayers.UPPER_BODY_LAYER}"), 1);
   }
 
   public override void ExitState(EnemyStateMachine parState)
   {
     parState.Enemy.NavMeshAgent.isStopped = false;
-
-    /*var weapon = parState.Enemy.EnemyWeaponInventory.ActiveWeapon;
-
-    if (weapon != null)
-    {
-      weapon.OnAttackChargeComplete -= () =>
-      {
-        parState.Enemy.Animator.SetTrigger(EnemyAnimatorParams.IS_ATTACK);
-      };
-    }*/
 
     parState.Enemy.Animator.SetLayerWeight(parState.Enemy.Animator.GetLayerIndex($"{EnemyAnimatorLayers.UPPER_BODY_LAYER}"), 0);
   }

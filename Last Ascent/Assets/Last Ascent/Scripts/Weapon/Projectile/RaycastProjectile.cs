@@ -4,7 +4,7 @@ public class RaycastProjectile : BaseProjectile
 {
   [SerializeField, Min(0)] private float _maxDistance = 100.0f;
 
-  [SerializeField] private LayerMask _hitMask;
+  [SerializeField] private LayerMask _ignoreHitMask;
 
   //--------------------------------------
 
@@ -17,7 +17,7 @@ public class RaycastProjectile : BaseProjectile
     float step = _speed * Time.deltaTime;
     Vector3 move = transform.forward * step;
 
-    if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, move.magnitude, ~_hitMask))
+    if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, move.magnitude, ~_ignoreHitMask))
       OnHit(hit.point, hit.normal, hit.collider);
     else
     {

@@ -3,7 +3,8 @@ using UnityEngine;
 
 public abstract class Weapon : MonoBehaviour
 {
-  [SerializeField, Min(0)] protected int _damage;
+  [SerializeField, Min(0)] protected int _damage = 0;
+  [SerializeField, Min(0)] protected float _force = 5.0f;
 
   [Space]
   [SerializeField] protected Vector3 _position;

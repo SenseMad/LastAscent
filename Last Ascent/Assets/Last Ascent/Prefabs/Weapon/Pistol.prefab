@@ -80,6 +80,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damage: 50
+  _force: 25
   _position: {x: 0.075, y: -0.1, z: 0}
   _rotation: {x: 17.48, y: -90, z: 15.39}
   _shotCount: 1
