@@ -34,18 +34,16 @@ public sealed class EnemyStateMachine : MonoBehaviour
 
   private void Update()
   {
-    currentState.UpdateState(this);
+    currentState?.UpdateState(this);
   }
 
   //======================================
 
   public void SwitchState(EnemyBaseState parState)
   {
-    if (currentState != null)
-      currentState.ExitState(this);
-
+    currentState?.ExitState(this);
     currentState = parState;
-    currentState.EnterState(this);
+    currentState?.EnterState(this);
   }
 
   //======================================

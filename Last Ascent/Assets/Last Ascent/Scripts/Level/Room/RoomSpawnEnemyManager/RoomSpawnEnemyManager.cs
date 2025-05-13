@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class RoomSpawnEnemyManager : MonoBehaviour
 {
@@ -61,6 +60,9 @@ public class RoomSpawnEnemyManager : MonoBehaviour
 
   private IEnumerator CreateEnemyWithPortal(Enemy parEnemy, Vector3 parPosition)
   {
+    if (parEnemy == null || roomWaveManager?.Room == null)
+      yield break;
+
     bool portalIsOpen = false;
 
     GameObject effectPrefab = parEnemy.SpawnEffectPrefab;
@@ -75,7 +77,8 @@ public class RoomSpawnEnemyManager : MonoBehaviour
         .OnComplete(() => portalIsOpen = true);
     }
 
-    yield return new WaitUntil(() => portalIsOpen);
+    if (portal != null)
+      yield return new WaitUntil(() => portalIsOpen);
 
     yield return new WaitForSeconds(1f);
 
@@ -88,8 +91,13 @@ public class RoomSpawnEnemyManager : MonoBehaviour
 
     listCreatedEnemies.Add(newEnemy);
 
+    newEnemy.transform.localScale = Vector3.zero;
+    newEnemy.transform.DOScale(Vector3.one, 1f);
+    //newEnemy.transform.DOShakePosition(0.5f, 0.2f);
+
     if (portal != null)
     {
+      yield return new WaitForSeconds(1f);
       portal.transform.DOScale(Vector3.zero, 1).SetEase(Ease.InQuad)
         .OnComplete(() => Destroy(portal));
     }
@@ -97,9 +105,14 @@ public class RoomSpawnEnemyManager : MonoBehaviour
 
   private IEnumerator StartSpawnEnemy()
   {
+    yield return new WaitUntil(() => roomWaveManager != null && roomWaveManager.Room.IsRoomLoaded);
+
+    if (roomWaveManager.CurrentRoomWave == null)
+      yield break;
+
     foreach (var roomWaveSetting in roomWaveManager.CurrentRoomWave.RoomWaveSettings)
     {
-      if (roomWaveSetting == null || roomWaveSetting.Enemy == null)
+      if (roomWaveSetting == null || roomWaveSetting.Enemy == null || roomWaveSetting.SpawnPoint == null)
         continue;
 
       CreateEnemy(roomWaveSetting.Enemy, roomWaveSetting.SpawnPoint.position);

@@ -55,7 +55,7 @@ public class EnemyAttack : MonoBehaviour
     if (isStartAttack)
       return;
 
-    enemy.Animator.SetLayerWeight(enemy.Animator.GetLayerIndex($"{EnemyAnimatorLayers.UPPER_BODY_LAYER}"), enemy.IsAttackRange ? 1 : 0);
+    //enemy.Animator.SetLayerWeight(enemy.Animator.GetLayerIndex($"{EnemyAnimatorLayers.UPPER_BODY_LAYER}"), enemy.IsAttackRange ? 1 : 0);
   }
 
   //======================================
@@ -65,8 +65,8 @@ public class EnemyAttack : MonoBehaviour
     if (wasAnAttack)
       return;
 
-    if (!enemy.IsPlayerInAttackRange())
-      return;
+    /*if (!enemy.IsPlayerInAttackRange())
+      return;*/
 
     if (!enemy.NearestPlayer.TryGetComponent(out IDamageable parDamageable))
       return;

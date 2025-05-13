@@ -25,6 +25,8 @@ public sealed class RoomManager : MonoBehaviour
   public event Action<Room> OnCreateRoom;
   public event Action<Room> OnRoomCreated;
 
+  public event Action OnRoomChangeCompleted;
+
   public event Action OnRoomsAreOver;
 
   //======================================
@@ -46,6 +48,8 @@ public sealed class RoomManager : MonoBehaviour
   private void OnEnable()
   {
     OnCreateRoom += CreateRoom;
+
+    OnRoomChangeCompleted += RoomChangeCompleted;
   }
 
   private void OnDestroy()
@@ -111,6 +115,13 @@ public sealed class RoomManager : MonoBehaviour
 
   //======================================
 
+  private void RoomChangeCompleted()
+  {
+    CurrentRoom.RoomLoaded();
+  }
+
+  //======================================
+
   private IEnumerator ChangeRoom(Room parRoom)
   {
     levelManager.Player.CharacterController.enabled = false;
@@ -128,6 +139,7 @@ public sealed class RoomManager : MonoBehaviour
 
     yield return new WaitUntil(() => !roomLoadingUI.IsActive);
 
+    OnRoomChangeCompleted?.Invoke();
     coroutineChangeRoom = null;
   }
 

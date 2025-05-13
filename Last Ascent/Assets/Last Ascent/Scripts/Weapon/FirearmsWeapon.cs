@@ -54,7 +54,7 @@ public sealed class FirearmsWeapon : Weapon
 
   //======================================
 
-  public override bool Attack()
+  public override bool Attack(GameObject parOwner)
   {
     if (IsRecharge)
       return false;
@@ -65,7 +65,7 @@ public sealed class FirearmsWeapon : Weapon
     if (!(Time.time - LastAttackTime > 60.0f / _shotPerMinutes))
       return false;
 
-    DirectionFire();
+    DirectionFire(parOwner);
     MuzzlePerformEffects();
 
     LastAttackTime = Time.time;
@@ -78,7 +78,7 @@ public sealed class FirearmsWeapon : Weapon
     if (_autoRecharge && CurrentAmountAmmoInMagazine == 0)
       Recharge();
 
-    base.Attack();
+    base.Attack(parOwner);
 
     return true;
   }
@@ -102,7 +102,7 @@ public sealed class FirearmsWeapon : Weapon
 
   //======================================
 
-  private void DirectionFire()
+  private void DirectionFire(GameObject parOwner)
   {
     if (_projectilePrefab == null || _startShotPoints.Count == 0)
       return;
@@ -115,17 +115,18 @@ public sealed class FirearmsWeapon : Weapon
     Vector3 direction = (targetPoint - startPoint).normalized;
     Debug.DrawLine(startPoint, targetPoint, Color.cyan, 2f);
 
-    CreateProjectile(startPoint, direction);
+    CreateProjectile(startPoint, direction, parOwner);
   }
 
-  private void CreateProjectile(Vector3 parStartPoint, Vector3 parDirection)
+  private void CreateProjectile(Vector3 parStartPoint, Vector3 parDirection, GameObject parOwner)
   {
     Quaternion rotation = Quaternion.LookRotation(parDirection);
     BaseProjectile projectile = Instantiate(_projectilePrefab, parStartPoint, rotation);
 
-    projectile.Initialize(_damage);
+    projectile.Initialize(_damage, parOwner);
+    projectile.Launch(parDirection, _shotSpeed);
 
-    projectile.Rigidbody.linearVelocity = parDirection * _shotSpeed;
+    //projectile.Rigidbody.linearVelocity = parDirection * _shotSpeed;
   }
 
   private void DebugShootRays()

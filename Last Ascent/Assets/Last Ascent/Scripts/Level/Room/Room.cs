@@ -18,6 +18,8 @@ public sealed class Room : MonoBehaviour
 
   public bool IsRoomCreated { get; private set; }
 
+  public bool IsRoomLoaded { get; private set; }
+
   //======================================
 
   private void Awake()
@@ -32,6 +34,11 @@ public sealed class Room : MonoBehaviour
     LevelManager = parLeveManager;
 
     IsRoomCreated = true;
+  }
+
+  public void RoomLoaded()
+  {
+    IsRoomLoaded = true;
   }
 
   //======================================

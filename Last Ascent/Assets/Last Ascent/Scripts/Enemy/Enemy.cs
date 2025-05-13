@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,45 +9,22 @@ public class Enemy : MonoBehaviour, IDamageable
 {
   [SerializeField] private EnemyType _enemyType;
 
-  [Header("Health")]
-  [SerializeField] private Health _health;
-
   [Header("Specifications")]
   [SerializeField, Min(0)] private float _rotationSpeed = 10.0f;
-  [SerializeField, Min(0)] private float _detectionRange = 5.0f;
-
-  [SerializeField, Min(0)] private float _attackRadius = 2.0f;
-  [SerializeField, Min(0)] private float _patrolRadius = 5.0f;
-
-  [Header("Mask")]
-  [SerializeField] private LayerMask _playerLayer;
 
   [Header("Effect")]
   [SerializeField] private GameObject _spawnEffectPrefab;
-
-  [Space]
-  [SerializeField] private GameObject _enemySkin;  
-
-  //--------------------------------------
-
-  private readonly Collider[] detectedPlayers = new Collider[4];
-  private readonly Collider[] attackRangePlayers = new Collider[4];
-
-  private Collider currentCollider;
 
   //======================================
 
   public float RotationSpeed => _rotationSpeed;
 
   public EnemyStateMachine EnemyStateMachine { get; private set; }
-  public EnemyAttack EnemyAttack { get; private set; }
 
   public NavMeshAgent NavMeshAgent { get; private set; }
   public NavMeshPath NavMeshPath { get; private set; }
 
   public Animator Animator { get; private set; }
-
-  public Player NearestPlayer { get; private set; }
 
   public EnemyType EnemyType => _enemyType;
 
@@ -54,27 +32,38 @@ public class Enemy : MonoBehaviour, IDamageable
 
   public Health Health { get; private set; }
 
-  public float AttackRadius => _attackRadius;
-  public float PatrolRadius => _patrolRadius;
-
-  public bool IsAttackRange { get; private set; }
-
   public List<EnemyBodyPart> EnemyBodyParts { get; private set; }
+
+  //public SmartAttack SmartAttack { get; private set; }
+
+  //public IWeapon Weapon { get; private set; }
+
+  public Collider CurrentCollider { get; private set; }
+
+  public TargetDetector TargetDetector { get; private set; }
+  public TargetAttackDetector TargetAttackDetector { get; private set; }
+  public EnemyWeaponInventory EnemyWeaponInventory { get; private set; }
+
+  public Player NearestPlayer => TargetDetector?.NearestPlayer;
 
   //======================================
 
   private void Awake()
   {
-    EnemyStateMachine = GetComponent<EnemyStateMachine>();
-    EnemyAttack = GetComponent<EnemyAttack>();
+    EnemyStateMachine = transform.AddComponent<EnemyStateMachine>();
 
     NavMeshAgent = GetComponent<NavMeshAgent>();
 
-    currentCollider = GetComponent<Collider>();
+    CurrentCollider = GetComponent<Collider>();
 
     Animator = GetComponent<Animator>();
 
     EnemyBodyParts = GetComponentsInChildren<EnemyBodyPart>().ToList();
+
+    InitializingModules();
+
+    TargetAttackDetector = GetComponent<TargetAttackDetector>();
+    EnemyWeaponInventory = GetComponentInChildren<EnemyWeaponInventory>();
 
     //uiHealthBar = GetComponent<UIHealthBar>();
   }
@@ -86,22 +75,26 @@ public class Enemy : MonoBehaviour, IDamageable
 
   private void OnDestroy()
   {
-    if (Health != null)
-      Health.OnInstantlyKill -= Health_OnInstantlyKill;
+    Health.OnInstantlyKill -= Health_OnInstantlyKill;
   }
 
   private void Update()
   {
-    NearestPlayer = DetectNearestPlayer();
-
     //SetAttackAnimatorLayer();
   }
 
   //======================================
 
-  public void Initialize()
-  {
+  public void Initialize() { }
 
+  public void InitializingModules()
+  {
+    TargetDetector = GetComponent<TargetDetector>();
+    //SmartAttack = GetComponent<SmartAttack>();
+
+    //Weapon = GetComponentInChildren<IWeapon>();
+
+    Animator.SetLayerWeight(Animator.GetLayerIndex($"{EnemyAnimatorLayers.UPPER_BODY_LAYER}"), 1);
   }
 
   public void HealthInitialize(int parMaxHealth)
@@ -128,58 +121,6 @@ public class Enemy : MonoBehaviour, IDamageable
 
   //======================================
 
-  public bool IsPossibleReachPlayer()
-  {
-    return IsPossibleReachPlayer(NearestPlayer.transform);
-  }
-
-  public bool IsPossibleReachPlayer(Transform parNearestTarget)
-  {
-    if (parNearestTarget == null)
-    {
-      NavMeshPath = null;
-      return false;
-    }
-
-    NavMeshAgent.CalculatePath(parNearestTarget.position, NavMeshPath);
-
-    return NavMeshPath.status == NavMeshPathStatus.PathComplete;
-  }
-
-  public bool IsPlayerInAttackRange()
-  {
-    IsAttackRange = false;
-
-    if (NearestPlayer == null)
-      return false;
-
-    int hitCount = Physics.OverlapSphereNonAlloc(transform.position, _attackRadius, attackRangePlayers, _playerLayer);
-    if (hitCount <= 0)
-      return false;
-
-    for (int i = 0; i < hitCount; i++)
-    {
-      Collider detectPlayer = detectedPlayers[i];
-
-      if (detectPlayer == null)
-        continue;
-
-      if (!detectPlayer.TryGetComponent(out Player parPlayer))
-        continue;
-
-      if (parPlayer != NearestPlayer)
-        continue;
-
-      IsAttackRange = true;
-
-      return true;
-    }
-
-    return false;
-  }
-
-  //======================================
-
   private void Health_OnInstantlyKill()
   {
     if (!NavMeshAgent.enabled && Health.IsDead)
@@ -202,7 +143,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
       enemyBodyPart.Collider.enabled = false;
     }
-    currentCollider.enabled = false;
+    CurrentCollider.enabled = false;
 
     for (int i = 0; i < Animator.layerCount; i++)
       Animator.SetLayerWeight(i, 0);
@@ -212,72 +153,21 @@ public class Enemy : MonoBehaviour, IDamageable
 
   //======================================
 
-  private Player DetectNearestPlayer()
+  private void OnDealDamage(AnimationEvent animationEvent)
   {
-    int hitCount = Physics.OverlapSphereNonAlloc(transform.position, _detectionRange, detectedPlayers, _playerLayer);
-    if (hitCount <= 0)
-      return null;
+    if (!TargetAttackDetector.IsInAttackRange(TargetDetector.NearestPlayer))
+      return;
 
-    Player retNearestPlayer = null;
+    if (!TargetDetector.NearestPlayer.TryGetComponent(out IDamageable parDamageable))
+      return;
 
-    float nearestDistance = Mathf.Infinity;
-
-    for (int i = 0; i < hitCount; i++)
-    {
-      Collider detectPlayer = detectedPlayers[i];
-
-      if (detectPlayer == null)
-        continue;
-
-      if (!detectPlayer.TryGetComponent(out Player parPlayer))
-        continue;
-
-      if (parPlayer.IsPlayerUnavailable())
-        continue;
-
-      NavMesh.CalculatePath(transform.position, parPlayer.transform.position, NavMesh.AllAreas, NavMeshPath);
-
-      if (NavMeshPath.status != NavMeshPathStatus.PathComplete)
-        continue;
-
-      float distanceToPlayer = CalculateDistanceToPlayer();
-
-      if (distanceToPlayer < nearestDistance)
-      {
-        nearestDistance = distanceToPlayer;
-        retNearestPlayer = parPlayer;
-      }
-    }
-
-    return retNearestPlayer;
+    parDamageable.TakeDamage(EnemyWeaponInventory.ActiveWeapon.Damage);
+    //Debug.Log("Урон нанесен");
   }
 
-  private float CalculateDistanceToPlayer()
+  private void OnAttackIsComplete(AnimationEvent animationEvent)
   {
-    if (NavMeshPath.corners.Length < 2)
-      return 0;
-
-    float retDistance = 0;
-
-    for (int i = 0; i < NavMeshPath.corners.Length - 1; i++)
-      retDistance += Vector3.Distance(NavMeshPath.corners[i], NavMeshPath.corners[i + 1]);
-
-    return retDistance;
-  }
-
-  //======================================
-
-  private void OnDrawGizmos()
-  {
-    Gizmos.color = Color.yellow;
-    Gizmos.DrawWireSphere(transform.position, _detectionRange);
-
-    Gizmos.color = Color.red;
-    var attackPosition = EnemyAttack != null && EnemyAttack.AttackPoint != null ? EnemyAttack.AttackPoint.position : transform.position;
-    Gizmos.DrawWireSphere(attackPosition, _attackRadius);
-
-    Gizmos.color = Color.green;
-    Gizmos.DrawWireSphere(transform.position, _patrolRadius);
+    EnemyWeaponInventory.ActiveWeapon?.NotifyAttackComplete();
   }
 
   //======================================

@@ -2,10 +2,30 @@ using UnityEngine;
 
 public class EnemyFollowState : EnemyBaseState
 {
+  private IFollowBehaviour followBehaviour;
+
   public override void EnterState(EnemyStateMachine parState)
   {
-    parState.Enemy.NavMeshAgent.isStopped = false;
+    followBehaviour ??= parState.GetComponent<IFollowBehaviour>();
+    parState.Enemy.Animator.SetLayerWeight(parState.Enemy.Animator.GetLayerIndex($"{EnemyAnimatorLayers.UPPER_BODY_LAYER}"), 0);
 
+    if (followBehaviour == null)
+    {
+      if (parState.Enemy.TargetDetector.IsPossibleReachPlayer())
+      {
+        if (parState.Enemy.TargetAttackDetector.IsInAttackRange(parState.Enemy.NearestPlayer) && parState.Enemy.EnemyWeaponInventory.ActiveWeapon.AttackState == AttackState.Ready)
+        {
+          parState.SwitchState(parState.AttackState);
+          return;
+        }
+      }
+
+      //Debug.LogWarning($"{parState.name} can't follow the player");
+      parState.SwitchState(parState.PatrolState);
+      return;
+    }
+
+    parState.Enemy.NavMeshAgent.isStopped = false;
     parState.Enemy.Animator.SetFloat(EnemyAnimatorParams.SPEED, parState.Enemy.NavMeshAgent.speed);
   }
 
@@ -16,28 +36,19 @@ public class EnemyFollowState : EnemyBaseState
 
   public override void UpdateState(EnemyStateMachine parState)
   {
-    if (parState.Enemy.NearestPlayer == null || !parState.Enemy.IsPossibleReachPlayer())
+    if (!parState.Enemy.TargetDetector.IsPossibleReachPlayer())
     {
       parState.SwitchState(parState.PatrolState);
       return;
     }
 
-    if (parState.Enemy.IsPlayerInAttackRange())
+    if (parState.Enemy.TargetAttackDetector.IsInAttackRange(parState.Enemy.NearestPlayer) && parState.Enemy.EnemyWeaponInventory.ActiveWeapon.AttackState == AttackState.Ready)
     {
       parState.SwitchState(parState.AttackState);
       return;
     }
 
-    FollowPlayer(parState);
-  }
-
-  //======================================
-
-  private void FollowPlayer(EnemyStateMachine parState)
-  {
-    Vector3 targetPosition = parState.Enemy.NearestPlayer.transform.position;
-
-    parState.Enemy.NavMeshAgent.SetDestination(targetPosition);
+    followBehaviour.Follow(parState.Enemy.NearestPlayer.transform);
   }
 
   //======================================

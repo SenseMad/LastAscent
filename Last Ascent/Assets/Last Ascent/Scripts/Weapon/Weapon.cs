@@ -50,7 +50,7 @@ public abstract class Weapon : MonoBehaviour
 
   //======================================
 
-  public virtual bool Attack()
+  public virtual bool Attack(GameObject parOwner)
   {
     OnAttack?.Invoke();
     return true;

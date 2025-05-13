@@ -38,12 +38,12 @@ public sealed class SpawnEnemyManager : MonoBehaviour
 
   private void OnEnable()
   {
-    waveManager.OnWaveStarted += StartEnemySpawn;
+    //waveManager.OnWaveStarted += StartEnemySpawn;
   }
 
   private void OnDisable()
   {
-    waveManager.OnWaveStarted -= StartEnemySpawn;
+    //waveManager.OnWaveStarted -= StartEnemySpawn;
   }
 
   //======================================
@@ -61,7 +61,7 @@ public sealed class SpawnEnemyManager : MonoBehaviour
 
     foreach (var enemy in listEnemies.Enemies)
     {
-      if (enemy == null || enemy.EnemyType != parEnemyType)
+      if (enemy == null/* || enemy.EnemyType != parEnemyType*/)
         continue;
 
       Enemy newEnemy = Instantiate(enemy, spawnPoint.position, Quaternion.identity);

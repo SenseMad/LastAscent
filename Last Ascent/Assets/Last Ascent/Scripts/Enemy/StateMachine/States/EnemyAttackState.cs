@@ -5,21 +5,60 @@ public class EnemyAttackState : EnemyBaseState
   public override void EnterState(EnemyStateMachine parState)
   {
     parState.Enemy.NavMeshAgent.isStopped = true;
+
+    /*var weapon = parState.Enemy.EnemyWeaponInventory.ActiveWeapon;
+
+    if (weapon != null)
+    {
+      weapon.OnAttackChargeComplete += () =>
+      {
+        parState.Enemy.Animator.SetTrigger(EnemyAnimatorParams.IS_ATTACK);
+      };
+    }*/
+
+    parState.Enemy.Animator.SetLayerWeight(parState.Enemy.Animator.GetLayerIndex($"{EnemyAnimatorLayers.UPPER_BODY_LAYER}"), 1);
   }
 
-  public override void ExitState(EnemyStateMachine parState) { }
+  public override void ExitState(EnemyStateMachine parState)
+  {
+    parState.Enemy.NavMeshAgent.isStopped = false;
+
+    /*var weapon = parState.Enemy.EnemyWeaponInventory.ActiveWeapon;
+
+    if (weapon != null)
+    {
+      weapon.OnAttackChargeComplete -= () =>
+      {
+        parState.Enemy.Animator.SetTrigger(EnemyAnimatorParams.IS_ATTACK);
+      };
+    }*/
+
+    parState.Enemy.Animator.SetLayerWeight(parState.Enemy.Animator.GetLayerIndex($"{EnemyAnimatorLayers.UPPER_BODY_LAYER}"), 0);
+  }
 
   public override void UpdateState(EnemyStateMachine parState)
   {
-    if (!parState.Enemy.IsPlayerInAttackRange())
+    var enemy = parState.Enemy;
+    var weapon = enemy.EnemyWeaponInventory.ActiveWeapon;
+
+    if (weapon == null)
     {
       parState.SwitchState(parState.FollowState);
       return;
     }
 
-    RotationNearestPlayer(parState);
+    if (weapon.AttackState == AttackState.Ready)
+    {
+      if (enemy.NearestPlayer == null || !enemy.TargetAttackDetector.IsInAttackRange(parState.Enemy.NearestPlayer))
+      {
+        parState.SwitchState(parState.FollowState);
+        return;
+      }
 
-    parState.Enemy.EnemyAttack.Attack();
+      weapon.TryStartAttack();
+    }
+
+    RotationNearestPlayer(parState);
   }
 
   //======================================

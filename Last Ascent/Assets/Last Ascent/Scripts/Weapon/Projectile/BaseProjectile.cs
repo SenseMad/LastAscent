@@ -1,66 +1,59 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
 public class BaseProjectile : MonoBehaviour
 {
-  [SerializeField] protected float _destroyAfter = 5.0f;
+  [SerializeField, Min(0)] protected float _speed = 50.0f;
+
+  [SerializeField, Min(0)] protected float _destroyAfter = 5.0f;
 
   [SerializeField] private Transform _hitEffectPrefab;
 
   //--------------------------------------
 
-  protected int damage;
+  private int damage;
+
+  protected GameObject owner;
 
   //======================================
 
-  public Rigidbody Rigidbody { get; private set; }
-
-  //======================================
-
-  private void Awake()
-  {
-    Rigidbody = GetComponent<Rigidbody>();
-  }
-
-  private void Start()
-  {
-    Destroy();
-  }
-
-  //======================================
-
-  public virtual void Initialize(int parDamage)
-  {
-    damage = parDamage;
-  }
-
-  //======================================
-
-  protected virtual void Collider(Collision parCollision)
-  {
-    CreateHitEffect(parCollision);
-  }
-
-  protected void Destroy()
+  protected virtual void Start()
   {
     Destroy(gameObject, _destroyAfter);
   }
 
   //======================================
 
-  private void CreateHitEffect(Collision parCollision)
+  public virtual void Initialize(int parDamage, GameObject parOwner = null)
   {
-    if (_hitEffectPrefab == null)
-      return;
+    damage = parDamage;
+    owner = parOwner;
+  }
 
-    Instantiate(_hitEffectPrefab, transform.position, Quaternion.LookRotation(parCollision.contacts[0].normal));
+  public virtual void Launch(Vector3 parDirection, float parSpeed)
+  {
+    _speed = parSpeed;
   }
 
   //======================================
 
-  private void OnCollisionEnter(Collision parCollision)
+  protected virtual void OnHit(Vector3 parHitPoint, Vector3 parHitNormal, Collider parOther)
   {
-    Collider(parCollision);
+    CreateHitEffect(parHitPoint, parHitNormal);
+
+    if (parOther.TryGetComponent(out IDamageable parDamageable))
+      parDamageable.TakeDamage(damage);
+
+    Destroy(gameObject);
+  }
+
+  //======================================
+
+  private void CreateHitEffect(Vector3 parHitPoint, Vector3 parHitNormal)
+  {
+    if (_hitEffectPrefab == null)
+      return;
+
+    Instantiate(_hitEffectPrefab, parHitPoint, Quaternion.LookRotation(parHitNormal));
   }
 
   //======================================

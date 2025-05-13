@@ -37,7 +37,7 @@ public abstract class RoomWaveManager : MonoBehaviour
     Initialize();
   }
 
-  private void Start()
+  protected virtual void Start()
   {
     NextWave();
   }

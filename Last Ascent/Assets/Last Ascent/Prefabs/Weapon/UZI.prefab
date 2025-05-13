@@ -97,7 +97,7 @@ MonoBehaviour:
   _muzzleEffectPrefab: {fileID: 0}
   _hitEffectDestroyDelay: 2
   _soundFire: {fileID: 0}
-  _projectilePrefab: {fileID: 4058860243572147874, guid: dd154c4dba48ffa43ad92f32db660869, type: 3}
+  _projectilePrefab: {fileID: 332591754029581963, guid: dd154c4dba48ffa43ad92f32db660869, type: 3}
 --- !u!114 &1510647028573179111
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -263,7 +263,7 @@ public sealed class WeaponInventory : MonoBehaviour
 
     player.PlayerMovement.RotateTowardsPoint(targetPoint, () =>
     {
-      if (ActiveWeapon.Attack())
+      if (ActiveWeapon.Attack(player.gameObject))
       {
         IsInShootinStance = true;
         LastAttackTime = Time.time;
