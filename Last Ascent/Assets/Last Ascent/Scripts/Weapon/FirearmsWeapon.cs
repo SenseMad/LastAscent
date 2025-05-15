@@ -23,15 +23,14 @@ public sealed class FirearmsWeapon : Weapon
   [SerializeField] private bool _autoRecharge = false;
   [SerializeField, Min(0)] private float _rechargeTime = 1.0f;
 
-  [Header("Effect")]
-  [SerializeField] private Transform _muzzleEffectPrefab;
-  [SerializeField, Min(0)] private float _hitEffectDestroyDelay = 2.0f;
-
   [Header("Sounds")]
   [SerializeField] private AudioClip _soundFire;
 
   [Header("Projectile")]
   [SerializeField] private BaseProjectile _projectilePrefab;
+
+  [Header("Mask")]
+  [SerializeField] private LayerMask _ignoreMask;
 
   //--------------------------------------
 
@@ -66,14 +65,14 @@ public sealed class FirearmsWeapon : Weapon
       return false;
 
     DirectionFire(parOwner);
-    MuzzlePerformEffects();
 
     LastAttackTime = Time.time;
 
     if (!_infitityAmmo)
       CurrentAmountAmmoInMagazine--;
 
-    PlaySound(_soundFire, 1.0f);
+    PlaySoundWithPitch(_soundFire, 1.0f);
+    //PlaySound(_soundFire, 1.0f);
 
     if (_autoRecharge && CurrentAmountAmmoInMagazine == 0)
       Recharge();
@@ -110,23 +109,46 @@ public sealed class FirearmsWeapon : Weapon
     Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
     Ray cameraRay = Camera.main.ScreenPointToRay(screenCenter);
 
-    Vector3 targetPoint = Physics.Raycast(cameraRay, out RaycastHit hit, 1000f) ? hit.point : cameraRay.GetPoint(1000f);
-    Vector3 startPoint = _startShotPoints[0].position;
+    Vector3 targetPoint = Physics.Raycast(cameraRay, out RaycastHit hit, 1000f, ~_ignoreMask) ? hit.point : cameraRay.GetPoint(1000f);
+
+    foreach (var shotPoint in _startShotPoints)
+    {
+      Vector3 startPoint = shotPoint.position;
+      Vector3 direction = (targetPoint - startPoint).normalized;
+
+      if (_useSpread)
+      {
+        direction += CalculateSpread();
+        direction.Normalize();
+      }
+
+      Debug.DrawLine(startPoint, targetPoint, Color.cyan, 2f);
+
+      CreateProjectile(shotPoint, direction, parOwner);
+    }
+
+    /*Vector3 startPoint = _startShotPoints[0].position;
     Vector3 direction = (targetPoint - startPoint).normalized;
+
+    if (_useSpread)
+    {
+      direction += CalculateSpread();
+      direction.Normalize();
+    }
+
     Debug.DrawLine(startPoint, targetPoint, Color.cyan, 2f);
 
-    CreateProjectile(startPoint, direction, parOwner);
+    CreateProjectile(startPoint, direction, parOwner);*/
   }
 
-  private void CreateProjectile(Vector3 parStartPoint, Vector3 parDirection, GameObject parOwner)
+  private void CreateProjectile(Transform parShotPoint, Vector3 parDirection, GameObject parOwner)
   {
     Quaternion rotation = Quaternion.LookRotation(parDirection);
-    BaseProjectile projectile = Instantiate(_projectilePrefab, parStartPoint, rotation);
+    BaseProjectile projectile = Instantiate(_projectilePrefab, parShotPoint.position, rotation);
 
+    projectile.CreateMuzzleParticle(parShotPoint.position, parShotPoint);
     projectile.Initialize(_damage, parOwner);
     projectile.Launch(parDirection, _shotSpeed, _force);
-
-    //projectile.Rigidbody.linearVelocity = parDirection * _shotSpeed;
   }
 
   private void DebugShootRays()
@@ -134,7 +156,7 @@ public sealed class FirearmsWeapon : Weapon
     Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
     Ray cameraRay = Camera.main.ScreenPointToRay(screenCenter);
 
-    if (Physics.Raycast(cameraRay, out RaycastHit hit, 1000f))
+    if (Physics.Raycast(cameraRay, out RaycastHit hit, 1000f, ~_ignoreMask))
     {
       Debug.DrawLine(cameraRay.origin, hit.point, Color.red, 0.01f);
 
@@ -222,33 +244,38 @@ public sealed class FirearmsWeapon : Weapon
 
   #endregion
 
-  private void MuzzlePerformEffects()
-  {
-    if (_muzzleEffectPrefab == null)
-      return;
-
-    foreach (var startShotPoint in _startShotPoints)
-      Instantiate(_muzzleEffectPrefab, startShotPoint);
-  }
-
-  private void PlaySound(AudioClip parAudioClip, float parVolume)
+  private void PlaySoundWithPitch(AudioClip parAudioClip, float parVolume, float parMinPitch = 0.95f, float parMaxPitch = 1.05f)
   {
     if (parAudioClip == null)
       return;
 
-    AudioSource.PlayClipAtPoint(parAudioClip, transform.position, parVolume);
+    GameObject tempGameObject = new GameObject("TempAudio");
+    tempGameObject.transform.position = transform.position;
+
+    AudioSource audioSource = tempGameObject.AddComponent<AudioSource>();
+    audioSource.clip = parAudioClip;
+    audioSource.volume = parVolume;
+    audioSource.pitch = Random.Range(parMinPitch, parMaxPitch);
+    audioSource.spatialBlend = 1f;
+    audioSource.dopplerLevel = 0f;
+    audioSource.rolloffMode = AudioRolloffMode.Logarithmic;
+
+    audioSource.Play();
+
+    Destroy(tempGameObject, parAudioClip.length / audioSource.pitch);
   }
 
   //======================================
 
   private Vector3 CalculateSpread()
   {
-    return new Vector3
+    return Random.insideUnitSphere * _spreadFactor;
+    /*return new Vector3
     {
       x = Random.Range(-_spreadFactor, _spreadFactor),
       y = Random.Range(-_spreadFactor, _spreadFactor),
       z = Random.Range(-_spreadFactor, _spreadFactor)
-    };
+    };*/
   }
 
   //======================================

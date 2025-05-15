@@ -24,13 +24,23 @@ public class RagdollHandler : MonoBehaviour
   public void Enable()
   {
     foreach (var rigidbody in rigidbodies)
+    {
       rigidbody.isKinematic = false;
+
+      if (rigidbody.TryGetComponent(out Collider parCollider))
+        parCollider.isTrigger = false;
+    }
   }
 
   public void Disable()
   {
     foreach (var rigidbody in rigidbodies)
+    {
       rigidbody.isKinematic = true;
+
+      if (rigidbody.TryGetComponent(out Collider parCollider))
+        parCollider.isTrigger = true;
+    }
   }
 
   //======================================

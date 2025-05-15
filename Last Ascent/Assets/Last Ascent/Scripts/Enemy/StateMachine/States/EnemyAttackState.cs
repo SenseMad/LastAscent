@@ -29,7 +29,7 @@ public class EnemyAttackState : EnemyBaseState
 
     if (weapon.AttackState == AttackState.Ready)
     {
-      if (enemy.NearestPlayer == null || !enemy.TargetAttackDetector.IsInAttackRange(parState.Enemy.NearestPlayer))
+      if (!enemy.TargetAttackDetector.IsInAttackRange(parState.Enemy.NearestPlayer))
       {
         parState.SwitchState(parState.FollowState);
         return;

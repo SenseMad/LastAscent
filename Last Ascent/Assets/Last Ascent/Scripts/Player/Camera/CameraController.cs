@@ -11,8 +11,9 @@ public sealed class CameraController : MonoBehaviour
   [SerializeField] private Vector2 _angleRotation = new Vector2(-89, 89);
 
   [Header("Recoil Settings")]
-  [SerializeField, Min(0)] private float _maxRecoil = 1f;
+  [SerializeField, Min(0)] private float _maxRecoil = 3f;
   [SerializeField, Min(0)] private float _recoilSpeed = 15f;
+  [SerializeField, Min(0)] private float _recoilReturnSpeed = 15f;
 
   //--------------------------------------
 
@@ -23,7 +24,7 @@ public sealed class CameraController : MonoBehaviour
 
   private float currentPitch;
 
-  private float currentRecoilOffset;
+  private float recoilOffset = 0f;
 
   //======================================
 
@@ -60,9 +61,11 @@ public sealed class CameraController : MonoBehaviour
     _mainCinemachineCamera.Target.TrackingTarget = transform;
   }
 
-  public void AddRecoil(float parStrength)
+  public void ApplyRecoil(float parStrength)
   {
-    cinemachineTargetPitch = Mathf.Clamp(cinemachineTargetPitch - parStrength, _angleRotation.x, _angleRotation.y - _maxRecoil);
+    //cinemachineTargetPitch = Mathf.Clamp(cinemachineTargetPitch - parStrength, _angleRotation.x, _angleRotation.y - _maxRecoil);
+    recoilOffset += parStrength;
+    recoilOffset = Mathf.Min(recoilOffset, _maxRecoil);
   }
 
   //======================================
@@ -80,11 +83,20 @@ public sealed class CameraController : MonoBehaviour
       cinemachineTargetPitch += look.y * _sensitivity;
     }
 
-    cinemachineTargetPitch = Mathf.Clamp(cinemachineTargetPitch, _angleRotation.x, _angleRotation.y);
+    recoilOffset = Mathf.MoveTowards(recoilOffset, 0f, _recoilReturnSpeed * Time.deltaTime);
+
+    float pitchWithRecoil = cinemachineTargetPitch - recoilOffset;
+    pitchWithRecoil = Mathf.Clamp(pitchWithRecoil, _angleRotation.x, _angleRotation.y);
+
+    currentPitch = Mathf.Lerp(currentPitch, pitchWithRecoil, Time.deltaTime * _recoilSpeed);
+
+    transform.rotation = Quaternion.Euler(currentPitch, cinemachineTargetYaw, 0f);
+
+    /*cinemachineTargetPitch = Mathf.Clamp(cinemachineTargetPitch, _angleRotation.x, _angleRotation.y);
 
     currentPitch = Mathf.Lerp(currentPitch, cinemachineTargetPitch, Time.deltaTime * _recoilSpeed);
 
-    transform.rotation = Quaternion.Euler(currentPitch, cinemachineTargetYaw, 0f);
+    transform.rotation = Quaternion.Euler(currentPitch, cinemachineTargetYaw, 0f);*/
   }
 
   private float ClampAngle(float lfAngle, float lfMin, float lfMax)

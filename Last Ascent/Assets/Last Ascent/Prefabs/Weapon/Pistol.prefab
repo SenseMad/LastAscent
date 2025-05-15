@@ -24,12 +24,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 32903226312822230}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.001, y: 0.303, z: 0.406}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.165, z: 0.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6082020041429811344}
+  m_Father: {fileID: 3625550803558557838}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6011836035699267594
 GameObject:
@@ -63,7 +63,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3625550803558557838}
-  - {fileID: 7099443373538591699}
   - {fileID: 5320812168584214508}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -81,8 +80,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _damage: 50
   _force: 25
-  _position: {x: 0.075, y: -0.1, z: 0}
-  _rotation: {x: 17.48, y: -90, z: 15.39}
+  _size: {x: 0.9, y: 0.9, z: 0.9}
+  _position: {x: -0.05, y: 0.0086, z: 0.047}
+  _rotation: {x: -90, y: 0, z: 0}
+  _weaponModelObject: {fileID: 6011836035699267594}
   _shotCount: 1
   _shotPerMinutes: 200
   _shotSpeed: 70
@@ -95,10 +96,11 @@ MonoBehaviour:
   _maxAmountAmmoInMagazine: 0
   _autoRecharge: 0
   _rechargeTime: 1
-  _muzzleEffectPrefab: {fileID: 0}
-  _hitEffectDestroyDelay: 2
-  _soundFire: {fileID: 0}
+  _soundFire: {fileID: 8300000, guid: 6467313b0b3da89439025140d3831c2f, type: 3}
   _projectilePrefab: {fileID: 332591754029581963, guid: dd154c4dba48ffa43ad92f32db660869, type: 3}
+  _ignoreMask:
+    serializedVersion: 2
+    m_Bits: 6656
 --- !u!114 &3551072200452132228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,7 +145,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 7099443373538591699}
   m_Father: {fileID: 6082020041429811344}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4839846308157048197
@@ -224,8 +227,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8337522920987681363}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.012895981, y: 0.70698917, z: -0.20005989, w: 0.6782154}
-  m_LocalPosition: {x: 0.03129192, y: 0.113682106, z: 0.041499365}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

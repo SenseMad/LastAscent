@@ -7,8 +7,12 @@ public abstract class Weapon : MonoBehaviour
   [SerializeField, Min(0)] protected float _force = 5.0f;
 
   [Space]
+  [SerializeField] protected Vector3 _size;
   [SerializeField] protected Vector3 _position;
   [SerializeField] protected Vector3 _rotation;
+
+  [Space]
+  [SerializeField] private GameObject _weaponModelObject;
 
   //--------------------------------------
 
@@ -16,6 +20,8 @@ public abstract class Weapon : MonoBehaviour
   private int currentAmountAmmoInMagazine;
 
   //======================================
+
+  public GameObject WeaponModelObject => _weaponModelObject;
 
   public bool IsAttack { get; protected set; }
 
@@ -65,6 +71,11 @@ public abstract class Weapon : MonoBehaviour
   public void SetAttack(bool parIsAttack)
   {
     IsAttack = parIsAttack;
+  }
+
+  public void SetSize()
+  {
+    _weaponModelObject.transform.localScale = _size;
   }
 
   public void SetPosition()

@@ -6,8 +6,12 @@ public class BaseProjectile : MonoBehaviour
   [SerializeField, Min(0)] protected float _force = 10.0f;
 
   [SerializeField, Min(0)] protected float _destroyAfter = 5.0f;
+  [SerializeField, Min(0)] protected float _destroyMuzzle = 1.5f;
+  [SerializeField, Min(0)] protected float _destroyImpact = 1.5f;
 
-  [SerializeField] private Transform _hitEffectPrefab;
+  [Header("Particle")]
+  [SerializeField] private GameObject _impactParticle;
+  [SerializeField] private GameObject _muzzleParticle;
 
   //--------------------------------------
 
@@ -36,7 +40,7 @@ public class BaseProjectile : MonoBehaviour
     damage = parDamage;
     owner = parOwner;
 
-    //IgnoreCollision();
+    IgnoreCollision();
   }
 
   public virtual void Launch(Vector3 parDirection, float parSpeed, float parForce)
@@ -49,39 +53,49 @@ public class BaseProjectile : MonoBehaviour
 
   protected virtual void OnHit(Vector3 parHitPoint, Vector3 parHitNormal, Collider parOther)
   {
-    CreateHitEffect(parHitPoint, parHitNormal);
+    CreateImpactParticle(parHitPoint, parHitNormal);
 
     if (parOther.TryGetComponent(out Hitbox parHitbox))
       parHitbox.ApplyDamage(damage, parHitPoint * _force, parHitNormal);
-    /*else if (parOther.TryGetComponent(out IDamageable parDamageable))
-      parDamageable.TakeDamage(damage, parHitPoint * _force, parHitNormal);*/
+    else if (parOther.TryGetComponent(out IDamageable parDamageable))
+      parDamageable.TakeDamage(damage, parHitPoint * _force, parHitNormal);
 
     Destroy(gameObject);
   }
 
   //======================================
 
-  private void CreateHitEffect(Vector3 parHitPoint, Vector3 parHitNormal)
+  public void CreateMuzzleParticle(Vector3 parPosition, Transform parParent)
   {
-    if (_hitEffectPrefab == null)
+    if (_muzzleParticle == null)
       return;
 
-    Instantiate(_hitEffectPrefab, parHitPoint, Quaternion.LookRotation(parHitNormal));
+    GameObject muzzle = Instantiate(_muzzleParticle, parPosition, parParent.rotation, parParent);
+    Destroy(muzzle, _destroyMuzzle);
+  }
+
+  private void CreateImpactParticle(Vector3 parHitPoint, Vector3 parHitNormal)
+  {
+    if (_impactParticle == null)
+      return;
+
+    GameObject impact = Instantiate(_impactParticle, parHitPoint, Quaternion.LookRotation(parHitNormal));
+    Destroy(impact, _destroyImpact);
   }
 
   private void IgnoreCollision()
   {
-    if (owner != null)
+    if (owner == null)
+      return;
+
+    var ownerColliders = owner.GetComponentsInChildren<Collider>();
+
+    foreach (var ownerCollider in ownerColliders)
     {
-      var ownerColliders = owner.GetComponentsInChildren<Collider>();
+      if (ownerCollider == null)
+        continue;
 
-      foreach (var ownerCollider in ownerColliders)
-      {
-        if (ownerCollider == null)
-          continue;
-
-        Physics.IgnoreCollision(ownerCollider, currentCollider, true);
-      }
+      Physics.IgnoreCollision(ownerCollider, currentCollider, true);
     }
   }
 

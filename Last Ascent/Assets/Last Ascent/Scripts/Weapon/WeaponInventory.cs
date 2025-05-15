@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 public sealed class WeaponInventory : MonoBehaviour
 {
   [SerializeField, Min(0)] private int _maxAmountStoredWeapons = 2;
+  
+  [SerializeField] private Transform _container;
 
   [SerializeField] private LayerMask _ignoreMask;
 
@@ -87,6 +89,7 @@ public sealed class WeaponInventory : MonoBehaviour
     if (ActiveWeapon == null)
       return;
 
+    ActiveWeapon.SetSize();
     ActiveWeapon.SetPosition();
     ActiveWeapon.SetRotation();
 
@@ -142,6 +145,7 @@ public sealed class WeaponInventory : MonoBehaviour
       return;
     }
 
+    parWeapon.transform.SetParent(_container);
     listWeapons.Add(parWeapon);
     Equip(parWeapon);
   }
@@ -172,7 +176,10 @@ public sealed class WeaponInventory : MonoBehaviour
       return;
     }
 
-    Remove(parWeapon);
+    listWeapons.Remove(ActiveWeapon);
+    Destroy(ActiveWeapon);
+
+    parWeapon.transform.SetParent(_container);
     listWeapons.Add(parWeapon);
 
     Equip(parWeapon);
@@ -269,7 +276,7 @@ public sealed class WeaponInventory : MonoBehaviour
         LastAttackTime = Time.time;
 
         if (ActiveWeapon.TryGetComponent(out WeaponRecoil parWeaponRecoil))
-          player.CameraController.AddRecoil(parWeaponRecoil.RecoilStrength);
+          player.CameraController.ApplyRecoil(parWeaponRecoil.RecoilStrength);
       }
     });
   }

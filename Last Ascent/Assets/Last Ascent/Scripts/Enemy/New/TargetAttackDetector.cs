@@ -22,6 +22,9 @@ public class TargetAttackDetector : MonoBehaviour
 
   public bool IsInAttackRange(Player parPlayer)
   {
+    if (parPlayer == null)
+      return false;
+
     Vector3 position = new(enemy.transform.position.x, enemy.transform.position.y + enemy.CurrentCollider.bounds.center.y, enemy.transform.position.z);
     int count = Physics.OverlapSphereNonAlloc(position, _attackRadius, attackRangePlayers, _playerMask);
     if (count <= 0)

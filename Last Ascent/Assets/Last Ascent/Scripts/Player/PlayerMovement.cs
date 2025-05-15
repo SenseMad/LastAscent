@@ -133,8 +133,8 @@ public sealed class PlayerMovement : MonoBehaviour, ITickable
     }
 
     velocity = Vector3.Lerp(
-        new Vector3(velocity.x, 0f, velocity.z),
-        new Vector3(desiredVelocity.x, 0f, desiredVelocity.z),
+        new Vector3(velocity.x, velocity.y, velocity.z),
+        new Vector3(desiredVelocity.x, 0, desiredVelocity.z),
         Time.deltaTime * (moveDirection.sqrMagnitude > 0.0f ? _acceleration : _deceleration)
     );
 

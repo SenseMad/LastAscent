@@ -4,7 +4,7 @@ public class RaycastProjectile : BaseProjectile
 {
   [SerializeField, Min(0)] private float _maxDistance = 100.0f;
 
-  [SerializeField] private LayerMask _ignoreHitMask;
+  [SerializeField] private LayerMask _ignoreHitMask; 
 
   //--------------------------------------
 
