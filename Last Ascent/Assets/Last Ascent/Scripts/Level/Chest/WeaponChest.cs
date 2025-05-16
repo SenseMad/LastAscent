@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class WeaponChest : ChestBase
 {
-  [SerializeField, Min(0)] private int _numberDroppedWeapons;
+  [SerializeField, Min(0)] private int _numberDropped = 3;
+
   [SerializeField] private List<Weapon> _weaponPrefabs;
 
   //--------------------------------------
@@ -15,29 +16,29 @@ public class WeaponChest : ChestBase
 
   protected override void Open()
   {
-	if (_numberDroppedWeapons > _weaponPrefabs.Count)
-      _numberDroppedWeapons = _weaponPrefabs.Count;
+	if (_numberDropped > _weaponPrefabs.Count)
+      _numberDropped = _weaponPrefabs.Count;
 
-    HashSet<int> userWeaponIndex = new();
+    HashSet<int> usedIndex = new();
 
-    for (int i = 0; i < _numberDroppedWeapons; i++)
+    for (int i = 0; i < _numberDropped; i++)
 	{
-	  Vector3 offset = new(-1, 0, _numberDroppedWeapons - 1 - i);
+	  Vector3 offset = new(-1.5f, 0, _numberDropped - 1 - i);
 	  Vector3 finalPosition = transform.position + offset;
 
 	  int index = Random.Range(0, _weaponPrefabs.Count);
-      while (userWeaponIndex.Contains(index))
+      while (usedIndex.Contains(index))
         index = Random.Range(0, _weaponPrefabs.Count);
 
       Weapon weapon = Instantiate(_weaponPrefabs[index], transform.position, Quaternion.identity);
-      userWeaponIndex.Add(index);
+      usedIndex.Add(index);
 
-      GameObject weaponSelectObject = new("WeaponSelect");
-      weaponSelectObject.layer = LayerMask.NameToLayer("Interact");
-      weaponSelectObject.transform.SetParent(weapon.transform);
-      weaponSelectObject.transform.localPosition = Vector3.zero;
+      GameObject selectObject = new("WeaponSelect");
+      selectObject.layer = LayerMask.NameToLayer("Interact");
+      selectObject.transform.SetParent(weapon.transform);
+      selectObject.transform.localPosition = Vector3.zero;
 
-      WeaponSelect weaponSelect = weaponSelectObject.transform.gameObject.AddComponent<WeaponSelect>();
+      WeaponSelect weaponSelect = selectObject.transform.gameObject.AddComponent<WeaponSelect>();
       weaponSelect.OnSelect += WeaponSelect_OnSelect;
 
       weapon.transform.localScale = Vector3.one * 0.5f;

@@ -20,6 +20,7 @@ public sealed class GameplaySceneInstaller : MonoInstaller
   {
     Container.Bind<LevelManager>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
     Container.Bind<SpawnEnemyManager>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
+    Container.Bind<UpgradeManager>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
   }
 
   private void BindFromComponentInHierarchy()

@@ -18,6 +18,8 @@ public sealed class Player : MonoBehaviour, IDamageable
 
   public WeaponInventory WeaponInventory { get; private set; }
 
+  public UpgradeManager UpgradeManager { get; private set; }
+
   public Animator Animator { get; private set; }
 
   public PlayerSkinData PlayerSkinData { get; private set; }
@@ -82,6 +84,11 @@ public sealed class Player : MonoBehaviour, IDamageable
     Health.Initialize();
 
     Health.OnInstantlyKill += Health_OnInstantlyKill;
+  }
+
+  public void UpgradeManagerInitialize(UpgradeManager parUpgradeManager)
+  {
+    UpgradeManager = parUpgradeManager;
   }
 
   public void SetPlayerSkinData(PlayerSkinData parPlayerSkinData)

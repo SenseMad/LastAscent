@@ -24,6 +24,12 @@ public class WeaponSelect : MonoBehaviour, IInteractable
     selectCollider.isTrigger = true;
   }
 
+  private void OnDestroy()
+  {
+    Weapon.WeaponModelObject.transform.DOKill();
+    Weapon.WeaponModelObject.transform.rotation = Quaternion.identity;
+  }
+
   //======================================
 
   public void Initialize(Weapon parWeapon)
@@ -38,9 +44,6 @@ public class WeaponSelect : MonoBehaviour, IInteractable
   public void Interact(Player parPlayer)
   {
     OnSelect?.Invoke(this);
-
-    Weapon.WeaponModelObject.transform.DOKill();
-    Weapon.WeaponModelObject.transform.rotation = Quaternion.identity;
 
     parPlayer.WeaponInventory.Add(Weapon);
 

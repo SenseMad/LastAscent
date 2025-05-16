@@ -7,6 +7,7 @@ public sealed class LevelManager : MonoBehaviour
 {
   private RoomManager roomManager;
   private CinemachineCamera cinemachineCamera;
+  private UpgradeManager upgradeManager;
 
   //======================================
 
@@ -20,11 +21,12 @@ public sealed class LevelManager : MonoBehaviour
   //======================================
   
   [Inject]
-  private void Construct(InstallerLocationsData parInstallerLocationsData, RoomManager parRoomManager, CinemachineCamera parCinemachineCamera)
+  private void Construct(InstallerLocationsData parInstallerLocationsData, RoomManager parRoomManager, CinemachineCamera parCinemachineCamera, UpgradeManager parUpgradeManager)
   {
     InstallerLocationsData = parInstallerLocationsData;
     roomManager = parRoomManager;
     cinemachineCamera = parCinemachineCamera;
+    upgradeManager = parUpgradeManager;
   }
 
   //======================================
@@ -56,6 +58,7 @@ public sealed class LevelManager : MonoBehaviour
 
     Player = Instantiate(playerPrefab);
     Player.CameraController.Initialize(cinemachineCamera);
+    Player.UpgradeManagerInitialize(upgradeManager);
   }
 
   //======================================
