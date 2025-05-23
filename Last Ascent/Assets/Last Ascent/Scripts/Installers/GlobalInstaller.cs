@@ -13,7 +13,7 @@ public sealed class GlobalInstaller : MonoInstaller
 
   private void FromNewComponentOnNewGameObject()
   {
-    //Container.Bind<CharacterSelectionManager>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
+    Container.Bind<GameManager>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
   }
 
   private void BindInterfacesToTick()

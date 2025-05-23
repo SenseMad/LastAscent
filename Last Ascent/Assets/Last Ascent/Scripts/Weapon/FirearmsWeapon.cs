@@ -1,3 +1,4 @@
+using NUnit.Framework.Internal.Filters;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,8 +7,6 @@ public sealed class FirearmsWeapon : Weapon
 {
   [Header("Shoot")]
   [SerializeField, Min(0)] private int _shotCount = 1;
-  [SerializeField, Min(0)] private int _shotPerMinutes = 200;
-  [SerializeField, Min(0)] private float _shotSpeed = 8;
   [SerializeField] private List<Transform> _startShotPoints;
 
   [Header("Spread")]
@@ -61,7 +60,7 @@ public sealed class FirearmsWeapon : Weapon
     if (CurrentAmountAmmoInMagazine == 0 && !_infitityAmmo)
       return false;
 
-    if (!(Time.time - LastAttackTime > 60.0f / _shotPerMinutes))
+    if (!(Time.time - LastAttackTime > 60.0f / _weaponData.AttackPerMinutes))
       return false;
 
     DirectionFire(parOwner);
@@ -146,9 +145,20 @@ public sealed class FirearmsWeapon : Weapon
     Quaternion rotation = Quaternion.LookRotation(parDirection);
     BaseProjectile projectile = Instantiate(_projectilePrefab, parShotPoint.position, rotation);
 
+    int finalDamage = _weaponData.Damage;
+    if (Random.value < critChance)
+    {
+      finalDamage *= Mathf.RoundToInt(critChance);
+      //Debug.Log("КРИТ! Урон: " + finalDamage);
+    }
+    /*else
+    {
+      Debug.Log("Обычный урон: " + finalDamage);
+    }*/
+
     projectile.CreateMuzzleParticle(parShotPoint.position, parShotPoint);
-    projectile.Initialize(_damage, parOwner);
-    projectile.Launch(parDirection, _shotSpeed, _force);
+    projectile.Initialize(finalDamage, parOwner);
+    projectile.Launch(parDirection, _weaponData.AttackSpeed, _weaponData.Force);
   }
 
   private void DebugShootRays()

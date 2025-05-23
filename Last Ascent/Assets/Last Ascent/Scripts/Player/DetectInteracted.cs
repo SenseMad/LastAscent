@@ -17,7 +17,9 @@ public class DetectInteracted : MonoBehaviour
 
   //======================================
 
-  public IInteractable NearestObject;
+  public IInteractable NearestObject { get; private set; }
+
+  public IDetectable NearestDetect { get; private set; }
 
   //======================================
 
@@ -45,7 +47,10 @@ public class DetectInteracted : MonoBehaviour
 
   public void DetectInteractiveOject()
   {
+    NearestDetect?.UnDetect();
+
     NearestObject = null;
+    NearestDetect = null;
 
     int count = Physics.OverlapSphereNonAlloc(_pointDetection == null ? transform.position : _pointDetection.position, _radius, detectedColliders, _interactMask);
     if (count <= 0)
@@ -53,6 +58,7 @@ public class DetectInteracted : MonoBehaviour
 
     float nearestDistance = Mathf.Infinity;
     IInteractable interactable = null;
+    IDetectable detectable = null;
 
     foreach (var collider in detectedColliders)
     {
@@ -68,10 +74,16 @@ public class DetectInteracted : MonoBehaviour
       {
         nearestDistance = distance;
         interactable = parInteractable;
+
+        if (collider.TryGetComponent(out IDetectable parDetectable))
+          detectable = parDetectable;
       }
     }
 
     NearestObject = interactable;
+    NearestDetect = detectable;
+
+    NearestDetect?.Detect();
   }
 
   //======================================

@@ -80,13 +80,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _damage: 50
   _force: 25
+  _critMultiplier: 1.5
+  _attackPerMinutes: 200
+  _attackSpeed: 150
   _size: {x: 0.9, y: 0.9, z: 0.9}
   _position: {x: -0.05, y: 0.0086, z: 0.047}
   _rotation: {x: -90, y: 0, z: 0}
-  _weaponModelObject: {fileID: 6011836035699267594}
+  _weaponData: {fileID: 11400000, guid: 80a8c9d2b38b26647a554612ff13e709, type: 2}
+  _weaponModelObject: {fileID: 6690769238820404356}
   _shotCount: 1
-  _shotPerMinutes: 200
-  _shotSpeed: 70
   _startShotPoints:
   - {fileID: 7099443373538591699}
   _useSpread: 0

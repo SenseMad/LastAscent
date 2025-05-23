@@ -2,5 +2,6 @@ public enum UpgradeType
 {
   Damage,
   Health,
-  Speed
+  Speed,
+  CritChance
 }

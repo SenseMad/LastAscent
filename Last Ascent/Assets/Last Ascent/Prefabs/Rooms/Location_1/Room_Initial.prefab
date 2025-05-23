@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a4df11119d0e4fa4ca5592cb514e80f0, type: 2}
+  - {fileID: 2100000, guid: b5c46a73ce94fff4a836b8392ad44af5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -408,6 +408,7 @@ MonoBehaviour:
   _weaponPrefabs:
   - {fileID: 6331116799989565654, guid: 35825be9fa715e1428de8b3e4cb6c7c2, type: 3}
   - {fileID: 6331116799989565654, guid: a9cc33b153030874cbd38e01d95309f8, type: 3}
+  _weaponSelectPrefab: {fileID: 2371151049707721698, guid: 5c8c713c2f49315499a350c8d1bb8fb4, type: 3}
 --- !u!65 &207383282549528628
 BoxCollider:
   m_ObjectHideFlags: 0

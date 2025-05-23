@@ -8,6 +8,9 @@ public class WeaponChest : ChestBase
 
   [SerializeField] private List<Weapon> _weaponPrefabs;
 
+  [Space]
+  [SerializeField] private WeaponSelect _weaponSelectPrefab;
+
   //--------------------------------------
 
   private readonly List<Weapon> spawnedWeapons = new();
@@ -33,13 +36,19 @@ public class WeaponChest : ChestBase
       Weapon weapon = Instantiate(_weaponPrefabs[index], transform.position, Quaternion.identity);
       usedIndex.Add(index);
 
-      GameObject selectObject = new("WeaponSelect");
+      WeaponSelect weaponSelect = Instantiate(_weaponSelectPrefab, transform.position, Quaternion.identity);
+      weaponSelect.transform.SetParent(weapon.transform);
+      weaponSelect.transform.localPosition = Vector3.zero;
+
+      weaponSelect.OnSelected += OnWeaponSelect;
+
+      /*GameObject selectObject = new("WeaponSelect");
       selectObject.layer = LayerMask.NameToLayer("Interact");
       selectObject.transform.SetParent(weapon.transform);
       selectObject.transform.localPosition = Vector3.zero;
 
       WeaponSelect weaponSelect = selectObject.transform.gameObject.AddComponent<WeaponSelect>();
-      weaponSelect.OnSelect += WeaponSelect_OnSelect;
+      weaponSelect.OnSelect += WeaponSelect_OnSelect;*/
 
       weapon.transform.localScale = Vector3.one * 0.5f;
 
@@ -74,9 +83,9 @@ public class WeaponChest : ChestBase
 
   //======================================
 
-  private void WeaponSelect_OnSelect(WeaponSelect parWeaponSelect)
+  private void OnWeaponSelect(WeaponSelect parWeaponSelect)
   {
-    parWeaponSelect.OnSelect -= WeaponSelect_OnSelect;
+    parWeaponSelect.OnSelected -= OnWeaponSelect;
 
     spawnedWeapons.Remove(parWeaponSelect.Weapon);
 

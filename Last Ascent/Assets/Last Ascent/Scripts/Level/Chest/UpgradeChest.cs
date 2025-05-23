@@ -8,6 +8,7 @@ public class UpgradeChest : ChestBase
 
   [SerializeField] private List<UpgradeData> _possibleUpgrades;
 
+  [Space]
   [SerializeField] private UpgradeSelect _upgradeSelectPrefab;
 
   //--------------------------------------
@@ -37,8 +38,7 @@ public class UpgradeChest : ChestBase
 
       UpgradeSelect upgradeSelect = Instantiate(_upgradeSelectPrefab, transform.position, Quaternion.identity);
       upgradeSelect.transform.localScale = Vector3.one * 0.5f;
-      upgradeSelect.OnSelected += SelectUpgrade;
-      upgradeSelect.Initialize(upgradeData);
+      upgradeSelect.OnSelected += OnUpgradeSelect;
 
       GameObject selectObject = Instantiate(upgradeData.Model, upgradeSelect.transform);
       selectObject.transform.localPosition = Vector3.zero;
@@ -67,7 +67,6 @@ public class UpgradeChest : ChestBase
         .Join(upgrade.transform.DOScale(Vector3.one * 0.5f, duration))
         .Join(upgrade.transform.DORotate(new Vector3(0, 360, 0), duration, RotateMode.FastBeyond360))
         .OnComplete(() => Destroy(upgrade.gameObject));
-      // Weapon.WeaponModelObject.transform.DOKill();
     }
 
     base.ItemChosen();
@@ -75,9 +74,9 @@ public class UpgradeChest : ChestBase
 
   //======================================
 
-  private void SelectUpgrade(UpgradeSelect parUpgradeSelect)
+  private void OnUpgradeSelect(UpgradeSelect parUpgradeSelect)
   {
-    parUpgradeSelect.OnSelected -= SelectUpgrade;
+    parUpgradeSelect.OnSelected -= OnUpgradeSelect;
 
     spawnedUpgrades.Remove(parUpgradeSelect);
     Destroy(parUpgradeSelect.gameObject);

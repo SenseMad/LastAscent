@@ -32,6 +32,8 @@ public sealed class WeaponInventory : MonoBehaviour
 
   public event Action OnListWeaponsEmpty;
 
+  public event Action<Weapon> OnAddWeapon;
+  public event Action<Weapon> OnReplaceActiveWeapon;
   public event Action<Weapon> OnWeaponChanged;
 
   public event Action OnAmmoChanged;
@@ -86,12 +88,12 @@ public sealed class WeaponInventory : MonoBehaviour
 
   public void Initialize()
   {
-    if (ActiveWeapon == null)
-      return;
-
-    ActiveWeapon.SetSize();
-    ActiveWeapon.SetPosition();
-    ActiveWeapon.SetRotation();
+    if (ActiveWeapon != null)
+    {
+      ActiveWeapon.SetSize();
+      ActiveWeapon.SetPosition();
+      ActiveWeapon.SetRotation();
+    }
 
     player.Health.OnInstantlyKill += Health_OnInstantlyKill;
   }
@@ -116,15 +118,14 @@ public sealed class WeaponInventory : MonoBehaviour
     if (ActiveWeapon != null)
     {
       ActiveWeapon.NotEquipWeapons();
-
       ActiveWeapon.gameObject.SetActive(false);
     }
 
     ActiveWeapon = parWeapon;
-
     ActiveWeapon.EquipWeapons();
-
     ActiveWeapon.gameObject.SetActive(true);
+
+    OnWeaponChanged?.Invoke(ActiveWeapon);
 
     Initialize();
 
@@ -144,6 +145,8 @@ public sealed class WeaponInventory : MonoBehaviour
       ReplaceActive(parWeapon);
       return;
     }
+
+    OnAddWeapon?.Invoke(parWeapon);
 
     parWeapon.transform.SetParent(_container);
     listWeapons.Add(parWeapon);
@@ -181,6 +184,8 @@ public sealed class WeaponInventory : MonoBehaviour
 
     parWeapon.transform.SetParent(_container);
     listWeapons.Add(parWeapon);
+
+    OnReplaceActiveWeapon?.Invoke(parWeapon);
 
     Equip(parWeapon);
   }
@@ -274,6 +279,8 @@ public sealed class WeaponInventory : MonoBehaviour
       {
         IsInShootinStance = true;
         LastAttackTime = Time.time;
+
+        ActiveWeapon.GetChanceCritDamage(player.LevelManager.CalculateTotalCritChance());
 
         if (ActiveWeapon.TryGetComponent(out WeaponRecoil parWeaponRecoil))
           player.CameraController.ApplyRecoil(parWeaponRecoil.RecoilStrength);

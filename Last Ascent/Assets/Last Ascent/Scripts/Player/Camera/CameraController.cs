@@ -83,6 +83,8 @@ public sealed class CameraController : MonoBehaviour
       cinemachineTargetPitch += look.y * _sensitivity;
     }
 
+    cinemachineTargetPitch = Mathf.Clamp(cinemachineTargetPitch, _angleRotation.x, _angleRotation.y);
+
     recoilOffset = Mathf.MoveTowards(recoilOffset, 0f, _recoilReturnSpeed * Time.deltaTime);
 
     float pitchWithRecoil = cinemachineTargetPitch - recoilOffset;

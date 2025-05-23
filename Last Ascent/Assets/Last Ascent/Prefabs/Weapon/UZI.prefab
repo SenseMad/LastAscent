@@ -78,15 +78,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7f9e989058e9534c8ee87110fdc39b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 0
-  _force: 5
-  _size: {x: 0.7, y: 0.7, z: 0.7}
-  _position: {x: -0.08, y: 0.04, z: 0.064}
-  _rotation: {x: -90, y: 0, z: 0}
+  _weaponData: {fileID: 11400000, guid: 940392a9f4d0dc945a99cef5af648d67, type: 2}
   _weaponModelObject: {fileID: 6627709776335708147}
   _shotCount: 1
-  _shotPerMinutes: 500
-  _shotSpeed: 150
   _startShotPoints:
   - {fileID: 7099443373538591699}
   _useSpread: 0

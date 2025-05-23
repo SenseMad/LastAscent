@@ -8,17 +8,16 @@ public sealed class Player : MonoBehaviour, IDamageable
 
   //======================================
 
+  public InputHandler InputHandler { get; private set; }
+  public CameraController CameraController { get; private set; }
+  public UpgradeManager UpgradeManager { get; private set; }
+  public WeaponInventory WeaponInventory { get; private set; }
+  public GameManager GameManager { get; private set; }
+  public LevelManager LevelManager { get; private set; }
+
   public PlayerMovement PlayerMovement { get; private set; }
 
-  public InputHandler InputHandler { get; private set; }
-
   public CharacterController CharacterController { get; private set; }
-
-  public CameraController CameraController { get; private set; }
-
-  public WeaponInventory WeaponInventory { get; private set; }
-
-  public UpgradeManager UpgradeManager { get; private set; }
 
   public Animator Animator { get; private set; }
 
@@ -68,6 +67,8 @@ public sealed class Player : MonoBehaviour, IDamageable
 
   //======================================
 
+  #region Initialization
+
   public void Initialize()
   {
     CharacterController.enabled = true;
@@ -91,10 +92,17 @@ public sealed class Player : MonoBehaviour, IDamageable
     UpgradeManager = parUpgradeManager;
   }
 
-  public void SetPlayerSkinData(PlayerSkinData parPlayerSkinData)
+  public void GameManagerInitialize(GameManager parGameManager)
   {
-    PlayerSkinData = parPlayerSkinData;
+    GameManager = parGameManager;
   }
+
+  public void LevelManagerInitialize(LevelManager parLevelManager)
+  {
+    LevelManager = parLevelManager;
+  }
+
+  #endregion
 
   #region Animator Layer
 

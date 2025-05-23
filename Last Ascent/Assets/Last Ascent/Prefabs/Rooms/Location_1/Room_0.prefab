@@ -333,7 +333,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a4df11119d0e4fa4ca5592cb514e80f0, type: 2}
+  - {fileID: 2100000, guid: b5c46a73ce94fff4a836b8392ad44af5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -873,7 +873,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 282118df7cc427447bc05a44ad3a4da8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _numberDroppedWeapons: 2
+  _numberDropped: 3
   _weaponPrefabs:
   - {fileID: 6331116799989565654, guid: 35825be9fa715e1428de8b3e4cb6c7c2, type: 3}
   - {fileID: 6331116799989565654, guid: a9cc33b153030874cbd38e01d95309f8, type: 3}
